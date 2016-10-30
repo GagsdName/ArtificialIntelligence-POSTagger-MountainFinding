@@ -36,12 +36,6 @@ def construct_ridge(edge_strength):
 	ridge = edge_strength.argmax(axis = 0)
 	return ridge
 
-def smoothen_ridge(ridge):
-	for i in range(1,len(ridge)-1):
-		ridge[i] = ridge[i-1] + ridge[i+1]
-		ridge[i] = ridge[i]/2
-	return
-
 # main program
 #
 (input_filename, output_filename, gt_row, gt_col) = sys.argv[1:]
@@ -56,7 +50,6 @@ imsave('edges.jpg', edge_strength)
 # You'll need to add code here to figure out the results! For now,
 # just create a horizontal centered line.
 ridge = construct_ridge(edge_strength)
-smoothen_ridge(ridge)
 
 # output answer
 imsave(output_filename, draw_edge(input_image, ridge, (255, 0, 0), 5))
