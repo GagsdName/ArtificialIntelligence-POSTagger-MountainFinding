@@ -32,9 +32,34 @@ def draw_edge(image, y_coordinates, color, thickness):
             image.putpixel((x, t), color)
     return image
 
+def emission_probability(edge_strength, col, row):
+	value = edge_strength.item((row, col))
+	max_value = max(edge_strength[:,col])
+	value = value/float(max_value*1.5)
+	return value
+
+def transmission_probability(row, row1):
+	value = (0.99 - abs(row1 - row)/float(row+1))
+	if value < 0:
+		value = 0.01
+	return value
+		
 def construct_ridge(edge_strength):
-	ridge = edge_strength.argmax(axis = 0)
+	ridge = [0]*len(edge_strength[0])
+	expected_ridge = edge_strength.argmax(axis = 0)
+	ridge[0] = expected_ridge[0]
+	for i in range(1, len(ridge)):
+		max_value = 0
+		for j in range(len(edge_strength)):
+			temp = emission_probability(edge_strength, i, j)*transmission_probability(ridge[i-1], j)
+			if (temp > max_value):
+				ridge[i] = j
+				max_value = temp
 	return ridge
+
+def construct_ridge2(edge_strength, input_row, input_col):
+
+	return
 
 # main program
 #
@@ -43,15 +68,16 @@ def construct_ridge(edge_strength):
 # load in image 
 input_image = Image.open(input_filename)
 
-# compute edge strength mask
+# # compute edge strength mask
 edge_strength = edge_strength(input_image)
 imsave('edges.jpg', edge_strength)
 
-# You'll need to add code here to figure out the results! For now,
-# just create a horizontal centered line.
-ridge = construct_ridge(edge_strength)
+# # You'll need to add code here to figure out the results! For now,
+# # just create a horizontal centered line.
+
+red_ridge = edge_strength.argmax(axis = 0)
+blue_ridge = construct_ridge(edge_strength)
 
 # output answer
-imsave(output_filename, draw_edge(input_image, ridge, (255, 0, 0), 5))
-
-
+imsave(output_filename, draw_edge(input_image, red_ridge, (255, 0, 0), 5))
+imsave(output_filename, draw_edge(input_image, blue_ridge, (0, 0, 255), 5))
