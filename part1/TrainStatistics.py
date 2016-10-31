@@ -55,9 +55,23 @@ class TrainStatistics:
             self.wordToTagCount[temp] = (self.wordToTagCount[temp]+1) if temp in self.wordToTagCount else 1
             temp = sentence[1][i-1]+'#'+sentence[1][i]
             self.bigramCount[temp] = (self.bigramCount[temp]+1) if temp in self.bigramCount else 1
-            
+          
     def printStatistics(self):
         print("{}-{}".format('totalCount', self.totalCount))
         # print("{}-{}".format('sentenceStartCount', self.sentenceStartCount))
         print("{}-{}".format('individualCount', self.individualCount))
         # print("{}-{}".format('wordToTagCount', self.wordToTagCount))
+        
+# Returns the value of P(S) for a given POS Tag
+    def getPriorTagProbability(self, tag):
+        return self.individualCount[tag]/self.totalCount
+# Returns the probability of the given tag to occur in the beginning of a sentence
+# n = Total number of sentences in the training data
+    def getStartProbability(self, tag, n):
+        return self.sentenceStartCount[tag]/n
+# Returns the prior probability of tag1 given tag2: P(tag1/tag2)
+    def getTagConditionalProbability(self, tag1, tag2):
+        return self.bigramCount[tag2+'#'+tag1]/self.individualCount[tag2]
+# Returns the probability of a word (W) given a tag: P(W/S)
+    def getWordConditionalProbability(self, word, tag):
+        return self.wordToTagCount[word+'#'+tag]/self.individualCount[tag]
