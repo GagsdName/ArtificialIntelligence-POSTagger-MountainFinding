@@ -12,13 +12,14 @@
 
 import random
 import math
+from TrainStatistics import TrainStatistics
 
 # We've set up a suggested code structure, but feel free to change it. Just
 # make sure your code still works with the label.py and pos_scorer.py code
 # that we've supplied.
 #
+ts = TrainStatistics()
 class Solver:
-
     # Calculate the log of the posterior probability of a given sentence
     #  with a given part-of-speech labeling
     def posterior(self, sentence, label):
@@ -27,7 +28,9 @@ class Solver:
     # Do the training!
     #
     def train(self, data):
-        pass
+        for sentence in data:
+            ts.extractStatistics(sentence)
+        ts.printStatistics()
 
     # Functions for each algorithm.
     #
