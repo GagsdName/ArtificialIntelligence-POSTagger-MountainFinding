@@ -39,11 +39,11 @@ def emission_probability(edge_strength, col, row):
 	return value
 
 def transmission_probability(row, row1):
-	value = (0.99 - abs(row1 - row)/float(row+1))
+	value = (0.99 - (abs(row1 - row)*2.5)/float(row+1))
 	if value < 0:
 		value = 0.01
 	return value
-		
+
 def construct_ridge(edge_strength):
 	ridge = [0]*len(edge_strength[0])
 	expected_ridge = edge_strength.argmax(axis = 0)
