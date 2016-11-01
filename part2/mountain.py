@@ -38,24 +38,25 @@ def emission_probability(edge_strength, col, row):
 	value = value/float(max_value*1.5)
 	return value
 
-def transmission_probability(row, row1):
-	value = (0.99 - (abs(row1 - row)*2.5)/float(row+1))
+def transmission_probability(row, row1, parameter):
+	value = (0.99 - (abs(row1 - row)*parameter)/float(row+1))
 	if value < 0:
 		value = 0.01
 	return value
 
-def construct_ridge(edge_strength):
+def construct_ridge(edge_strength, parameter):
 	ridge = [0]*len(edge_strength[0])
 	expected_ridge = edge_strength.argmax(axis = 0)
 	ridge[0] = expected_ridge[0]
 	for i in range(1, len(ridge)):
 		max_value = 0
 		for j in range(len(edge_strength)):
-			temp = emission_probability(edge_strength, i, j)*transmission_probability(ridge[i-1], j)
+			temp = emission_probability(edge_strength, i, j)*transmission_probability(ridge[i-1], j, parameter)
 			if (temp > max_value):
 				ridge[i] = j
 				max_value = temp
-	return ridge
+	std_value = std(ridge, ddof = 1)
+	return ridge, std_value
 
 def construct_ridge2(edge_strength, input_row, input_col):
 
@@ -74,9 +75,17 @@ imsave('edges.jpg', edge_strength)
 
 # # You'll need to add code here to figure out the results! For now,
 # # just create a horizontal centered line.
-
 red_ridge = edge_strength.argmax(axis = 0)
-blue_ridge = construct_ridge(edge_strength)
+
+# Checking solution for different parameters and choosing best one
+parameter_list = [1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3]
+blue_ridge = []
+min_std = sys.maxint
+for parameter in parameter_list:
+	ridge, std_temp = construct_ridge(edge_strength, parameter)
+	if min_std > std_temp:
+		min_std = std_temp
+		blue_ridge = ridge
 
 # output answer
 imsave(output_filename, draw_edge(input_image, red_ridge, (255, 0, 0), 5))
