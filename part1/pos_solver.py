@@ -19,6 +19,7 @@ from TrainStatistics import TrainStatistics
 # that we've supplied.
 #
 ts = TrainStatistics()
+posTags = ['adj', 'adv', 'adp', 'conj', 'det', 'noun', 'num', 'pron', 'prt', 'verb', 'x', '.']
 class Solver:
     # Calculate the log of the posterior probability of a given sentence
     #  with a given part-of-speech labeling
@@ -30,13 +31,27 @@ class Solver:
     def train(self, data):
         for sentence in data:
             ts.extractStatistics(sentence)
-        ts.printStatistics()
+        print('Training completed...!')
 
     # Functions for each algorithm.
-    #
+    # In the simplified model, the probability of a tag given a word only depends on the prior probability of word
+    # given a tag. Just like the uni-gram model.
+    # P(T/W) = arg.max P(W/Ti).P(Ti)
     def simplified(self, sentence):
-        return [ [ [ "noun" ] * len(sentence)], [[0] * len(sentence),] ]
-
+        print('Simplified Model')
+        print(sentence)
+        posLabels = []
+        marginalProabbility = []
+        for word in sentence:
+            temp = []
+            for tag in posTags:
+                temp.append(ts.getWordConditionalProbability(word, tag)*ts.getPriorTagProbability(tag))
+            marginalProabbility.append(max(temp))
+            posLabels.append(posTags[temp.index(max(temp))])
+        # print(posLabels)
+        # print(marginalProabbility)
+        return [[posLabels], [marginalProabbility]]
+    
     def hmm(self, sentence):
         return [ [ [ "noun" ] * len(sentence)], [] ]
 

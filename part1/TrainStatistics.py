@@ -2,6 +2,8 @@
 Created on 30-Oct-2016
 This class is created to store the statistics obtained from training data.
 '''
+from __future__ import division
+
 class TrainStatistics:
     # totalCount = 0 # Total number of POS_Tags/Words in the training data
     # individualCount = {} # Total number of occurrences for each POS Tag
@@ -64,6 +66,7 @@ class TrainStatistics:
         
 # Returns the value of P(S) for a given POS Tag
     def getPriorTagProbability(self, tag):
+        # print("{}-{}".format(tag, self.individualCount[tag]))
         return self.individualCount[tag]/self.totalCount
 # Returns the probability of the given tag to occur in the beginning of a sentence
 # n = Total number of sentences in the training data
@@ -80,4 +83,5 @@ class TrainStatistics:
         if self.individualCount[tag]==0:
             return 0
         temp = word+'#'+tag
-        return self.wordToTagCount[temp]/self.individualCount[tag]
+        # print("{}-{}".format(temp, self.wordToTagCount[temp] if temp in self.wordToTagCount else 0))
+        return self.wordToTagCount[temp]/self.individualCount[tag] if temp in self.wordToTagCount else 0
