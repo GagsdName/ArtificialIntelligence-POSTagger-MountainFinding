@@ -58,8 +58,21 @@ def construct_ridge(edge_strength, parameter):
 	std_value = std(ridge, ddof = 1)
 	return ridge, std_value
 
-def construct_ridge2(edge_strength, input_row, input_col):
-
+def construct_ridge2(edge_strength):
+	#getting a sample particle
+	sampled_particle=[]
+	rows = []
+	columns = []
+	#print len(edge_strength)
+	#for j in range(len(edge_strength)):
+	#	print j
+      	while (len(sampled_particle) < len(edge_strength[0]) ):
+		row = random.randint(0, len(edge_strength));
+		column = random.randint(0,len(edge_strength[0]))
+		if row not in rows and column not in columns :
+			sampled_particle.append((row,column,edge_strength[row][column]))
+	
+	print sampled_particle
 	return
 
 # main program
@@ -81,12 +94,14 @@ red_ridge = edge_strength.argmax(axis = 0)
 parameter_list = [1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3]
 blue_ridge = []
 min_std = sys.maxint
-for parameter in parameter_list:
+'''for parameter in parameter_list:
 	ridge, std_temp = construct_ridge(edge_strength, parameter)
 	if min_std > std_temp:
 		min_std = std_temp
 		blue_ridge = ridge
 
+'''
+construct_ridge2(edge_strength)
 # output answer
 imsave(output_filename, draw_edge(input_image, red_ridge, (255, 0, 0), 5))
 imsave(output_filename, draw_edge(input_image, blue_ridge, (0, 0, 255), 5))
