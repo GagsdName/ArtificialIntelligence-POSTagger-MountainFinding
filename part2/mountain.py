@@ -66,13 +66,19 @@ def construct_ridge2(edge_strength):
 	#print len(edge_strength)
 	#for j in range(len(edge_strength)):
 	#	print j
-      	while (len(sampled_particle) < len(edge_strength[0]) ):
+	#print len(edge_strength[0])
+	#print len(edge_strength);
+	#print edge_strength.shape[1]
+      	while (len(columns) <  edge_strength.shape[1] ):
 		row = random.randint(0, len(edge_strength));
 		column = random.randint(0,len(edge_strength[0]))
-		if row not in rows and column not in columns :
-			sampled_particle.append((row,column,edge_strength[row][column]))
-	
-	print sampled_particle
+		if column not in columns :
+			rows.append(row)
+			columns.append(column)
+			sampled_particle.append(edge_strength[row][column])
+		#print len(columns)	
+	#need to smoothe our the sample particle
+	print sampled_particle	
 	return
 
 # main program
