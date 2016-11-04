@@ -74,13 +74,13 @@ class TrainStatistics:
     def getStartProbability(self, tag):
         return self.sentenceStartCount[tag]/self.N if tag in self.sentenceStartCount else 0.5/self.N
 # Returns the prior probability of tag1 given tag2: P(tag1/tag2) with Smoothing
-    def getTagConditionalProbability(self, tag1, tag2):
+    def getTransitionProbability(self, tag1, tag2):
         if self.individualCount[tag2]==0:
             return 0
         temp = tag2+'#'+tag1
         return self.bigramCount[temp]/self.individualCount[tag2] if temp in self.bigramCount else (0.5/self.individualCount[tag2])
 # Returns the probability of a word (W) given a tag: P(W/S) without Smoothing
-    def getWordConditionalProbability(self, word, tag):
+    def getEmissionProbability(self, word, tag):
         if self.individualCount[tag]==0:
             return 0
         temp = word+'#'+tag

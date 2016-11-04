@@ -30,11 +30,11 @@ class Solver:
         posteriorLog = ts.getPriorTagProbability(label[0])
         # print("{}-{}".format('Start', posteriorLog))
         for i in range(0, len(sentence)-1):
-            posteriorLog *= ts.getTagConditionalProbability(label[i+1], label[i]) * ts.getWordConditionalProbability(sentence[i], label[i])
-            # print("{}-{}".format(label[i+1]+'/'+label[i], ts.getTagConditionalProbability(label[i+1], label[i])))
-            # print("{}-{}".format(sentence[i]+'/'+label[i], ts.getWordConditionalProbability(sentence[i], label[i])))
+            posteriorLog *= ts.getTransitionProbability(label[i+1], label[i]) * ts.getEmissionProbability(sentence[i], label[i])
+            # print("{}-{}".format(label[i+1]+'/'+label[i], ts.getTransitionProbability(label[i+1], label[i])))
+            # print("{}-{}".format(sentence[i]+'/'+label[i], ts.getEmissionProbability(sentence[i], label[i])))
             # print("{}-{}".format('Partial', posteriorLog))
-        posteriorLog *= ts.getWordConditionalProbability(sentence[len(sentence)-1], label[len(label)-1])
+        posteriorLog *= ts.getEmissionProbability(sentence[len(sentence)-1], label[len(label)-1])
         # print("{}-{}".format('Before LOG', posteriorLog))
         if posteriorLog != 0.0:
             posteriorLog = Log(posteriorLog)
@@ -61,7 +61,7 @@ class Solver:
         for word in sentence:
             temp = []
             for tag in posTags:
-                temp.append(ts.getWordConditionalProbability(word, tag)*ts.getPriorTagProbability(tag))
+                temp.append(ts.getEmissionProbability(word, tag)*ts.getPriorTagProbability(tag))
             marginalProabbility.append(max(temp))
             posLabels.append(posTags[temp.index(max(temp))])
         # print(posLabels)
