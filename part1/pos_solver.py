@@ -11,7 +11,7 @@
 ####
 
 import random
-import math
+from math import log as Log
 from TrainStatistics import TrainStatistics
 
 # We've set up a suggested code structure, but feel free to change it. Just
@@ -23,13 +23,29 @@ posTags = ['adj', 'adv', 'adp', 'conj', 'det', 'noun', 'num', 'pron', 'prt', 've
 class Solver:
     # Calculate the log of the posterior probability of a given sentence
     #  with a given part-of-speech labeling
+    # Calculated in the same way for all the 3 algorithms
+    # P(s|w)=P(s_0)*(multiplication of emission prob)*(multiplication of transition prob)
     def posterior(self, sentence, label):
-        return 0
+        # print(sentence)
+        posteriorLog = ts.getPriorTagProbability(label[0])
+        # print("{}-{}".format('Start', posteriorLog))
+        for i in range(0, len(sentence)-1):
+            posteriorLog *= ts.getTagConditionalProbability(label[i+1], label[i]) * ts.getWordConditionalProbability(sentence[i], label[i])
+            # print("{}-{}".format(label[i+1]+'/'+label[i], ts.getTagConditionalProbability(label[i+1], label[i])))
+            # print("{}-{}".format(sentence[i]+'/'+label[i], ts.getWordConditionalProbability(sentence[i], label[i])))
+            # print("{}-{}".format('Partial', posteriorLog))
+        posteriorLog *= ts.getWordConditionalProbability(sentence[len(sentence)-1], label[len(label)-1])
+        # print("{}-{}".format('Before LOG', posteriorLog))
+        if posteriorLog != 0.0:
+            posteriorLog = Log(posteriorLog)
+        # print("{}-{}".format('After LOG', posteriorLog))
+        return posteriorLog
 
     # Do the training!
     #
     def train(self, data):
         for sentence in data:
+            ts.addNewSentence()
             ts.extractStatistics(sentence)
         print('Training completed...!')
 
@@ -39,7 +55,7 @@ class Solver:
     # P(T/W) = arg.max P(W/Ti).P(Ti)
     def simplified(self, sentence):
         print('Simplified Model')
-        print(sentence)
+        # print(sentence)
         posLabels = []
         marginalProabbility = []
         for word in sentence:

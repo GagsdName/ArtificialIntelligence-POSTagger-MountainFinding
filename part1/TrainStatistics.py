@@ -12,6 +12,8 @@ class TrainStatistics:
     # wordToTagCount = {} # Counts the number of times a word can be mapped to a given POS Tag
   
     def __init__(self):
+        # N tracks the total number of sentences in the training data
+        self.N = 0
         self.totalCount = 0
         self.individualCount = {
                                     'adj' : 0,
@@ -69,9 +71,8 @@ class TrainStatistics:
         # print("{}-{}".format(tag, self.individualCount[tag]))
         return self.individualCount[tag]/self.totalCount
 # Returns the probability of the given tag to occur in the beginning of a sentence
-# n = Total number of sentences in the training data
-    def getStartProbability(self, tag, n):
-        return self.sentenceStartCount[tag]/n if tag in self.sentenceStartCount else 0.5/n
+    def getStartProbability(self, tag):
+        return self.sentenceStartCount[tag]/self.N if tag in self.sentenceStartCount else 0.5/self.N
 # Returns the prior probability of tag1 given tag2: P(tag1/tag2) with Smoothing
     def getTagConditionalProbability(self, tag1, tag2):
         if self.individualCount[tag2]==0:
@@ -85,3 +86,6 @@ class TrainStatistics:
         temp = word+'#'+tag
         # print("{}-{}".format(temp, self.wordToTagCount[temp] if temp in self.wordToTagCount else 0))
         return self.wordToTagCount[temp]/self.individualCount[tag] if temp in self.wordToTagCount else 0
+# Increment the count for new sentence  
+    def addNewSentence(self):
+        self.N += 1
