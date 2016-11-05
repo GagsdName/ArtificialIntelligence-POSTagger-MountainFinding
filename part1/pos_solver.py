@@ -10,9 +10,9 @@
 # Put your report here!!
 ####
 
-import random
 from math import log as Log
 from TrainStatistics import TrainStatistics
+from copy import deepcopy
 
 # We've set up a suggested code structure, but feel free to change it. Just
 # make sure your code still works with the label.py and pos_scorer.py code
@@ -26,7 +26,7 @@ class Solver:
     # Calculated in the same way for all the 3 algorithms
     # P(s|w)=P(s_0)*(multiplication of emission prob)*(multiplication of transition prob)
     def posterior(self, sentence, label):
-        # print(sentence)
+        # print("{}:{}".format(len(sentence), len(label)))
         posteriorLog = ts.getPriorTagProbability(label[0])
         # print("{}-{}".format('Start', posteriorLog))
         for i in range(0, len(sentence)-1):
@@ -69,7 +69,48 @@ class Solver:
         return [[posLabels], [marginalProabbility]]
     
     def hmm(self, sentence):
-        return [ [ [ "noun" ] * len(sentence)], [] ]
+        # print('--------------')
+        # print(sentence)
+        posLabels = []
+        marginalProabbility = []
+        # Since we only need the previous state information, keeping the previous state values in a list will save memory
+        # Size of the Viterbi Table = Number of POS Tags available = 12
+        # Initialize the Viterbi table with start probabilities
+        viterbiTable = []
+        for tag in posTags:
+            viterbiTable.append(ts.getStartProbability(tag) * ts.getEmissionProbability(sentence[0], tag))
+        # print("{}-{}".format('Viterbi Table', viterbiTable))
+        marginalProabbility.append(max(viterbiTable))
+        posLabels.append(posTags[viterbiTable.index(max(viterbiTable))])
+        # print("{}-{}".format('POS Labels', posLabels))
+        for word in sentence[1:]:
+            temp = []
+            for tag in posTags:
+                tagLikelihood = []
+                for i in range(0, len(posTags)):
+                    tagLikelihood.append(
+                                        viterbiTable[i] *
+                                        ts.getTransitionProbability(tag, posTags[i]) *
+                                        ts.getEmissionProbability(word, tag)
+                                        )
+                temp.append(max(tagLikelihood))
+            # If all the elements in temp are 0.0, then reset the viterbiTable with initial default
+            # probabilities of each tag. This will avoid the propagation of 0-probabilities to future
+            # steps of Viterbi Algorithm. By doing this we have observed a significant improvement in
+            # the word-accuracy - From 71.6% to 94.02%
+            if max(temp) != 0.0:
+                viterbiTable = deepcopy(temp)
+            else:
+                del viterbiTable[:]
+                for tag in posTags:
+                    viterbiTable.append(ts.getPriorTagProbability(tag))
+                # print(viterbiTable)
+            marginalProabbility.append(max(viterbiTable))
+            posLabels.append(posTags[viterbiTable.index(max(viterbiTable))])
+            # print("{}-{}".format('POS Labels', posLabels))
+            # print("{}-{}".format('Viterbi Table', viterbiTable))
+                                             
+        return [[posLabels], [marginalProabbility]]
 
     def complex(self, sentence):
         return [ [ [ "noun" ] * len(sentence)], [[0] * len(sentence),] ]

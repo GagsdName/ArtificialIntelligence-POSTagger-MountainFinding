@@ -4,6 +4,7 @@ This class is created to store the statistics obtained from training data.
 '''
 from __future__ import division
 
+
 class TrainStatistics:
     # totalCount = 0 # Total number of POS_Tags/Words in the training data
     # individualCount = {} # Total number of occurrences for each POS Tag
