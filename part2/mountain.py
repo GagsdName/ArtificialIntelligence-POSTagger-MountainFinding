@@ -44,6 +44,23 @@ def transmission_probability(row, row1, parameter):
 		value = 0.01
 	return value
 
+def conditional_probability_of_row(sample_edge_strength, col, edge_strength):
+	max_val = 999999
+	max_row = 0
+	for row in range(edge_strength.shape[0]):
+		prob_edge_str_given_row = sample_edge_strength/sum(edge_strength[row])
+		if (prob_edge_str_given_row < max_val):
+			max_val = prob_edge_str_given_row
+			max_row = row
+	return max_row	
+'''
+def transition_prob_of_row(row, edge_strength):
+	max_val = 0;
+	for row1 in range(len(edge_strength.shape[0])):
+		tr_prob = transmission_probability(row, row1,1.5)
+		if tr_prob > max_val:
+			max_val = tr_prob
+			m'''
 def construct_ridge(edge_strength, parameter):
 	ridge = [0]*len(edge_strength[0])
 	expected_ridge = edge_strength.argmax(axis = 0)
@@ -60,26 +77,33 @@ def construct_ridge(edge_strength, parameter):
 
 def construct_ridge2(edge_strength):
 	#getting a sample particle
-	sampled_particle=[]
+	sampled_edge_strength=[]
 	rows = []
 	columns = []
-	#print len(edge_strength)
-	#for j in range(len(edge_strength)):
-	#	print j
-	#print len(edge_strength[0])
-	#print len(edge_strength);
-	#print edge_strength.shape[1]
       	while (len(columns) <  edge_strength.shape[1] ):
 		row = random.randint(0, len(edge_strength));
 		column = random.randint(0,len(edge_strength[0]))
 		if column not in columns :
 			rows.append(row)
 			columns.append(column)
-			sampled_particle.append(edge_strength[row][column])
+			sampled_edge_strength.append(edge_strength[row][column])
 		#print len(columns)	
-	#need to smoothe our the sample particle
-	print sampled_particle	
-	return
+	print sampled_edge_strength
+	
+	max_val = 0
+	#smoothing particles now
+	for t in range(1,50):
+		for col in range(len(columns)):
+			for j in range(len(edge_strength)):
+				temp  =  emission_probability(edge_strength,columns[col] , j) * transmission_probability(rows[col-1],rows[col] , 1.5)
+
+				if (temp > max_val):
+					max_val = temp
+					rows[col] = j 
+			#conditional_probability_of_row(sampled_edge_strength[col], columns[col], edge_strength) 
+		
+	print rows				
+	return rows
 
 # main program
 #
@@ -107,7 +131,7 @@ min_std = sys.maxint
 		blue_ridge = ridge
 
 '''
-construct_ridge2(edge_strength)
+blue_ridge = construct_ridge2(edge_strength)
 # output answer
 imsave(output_filename, draw_edge(input_image, red_ridge, (255, 0, 0), 5))
 imsave(output_filename, draw_edge(input_image, blue_ridge, (0, 0, 255), 5))
