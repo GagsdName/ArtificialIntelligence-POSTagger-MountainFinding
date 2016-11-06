@@ -39,24 +39,33 @@ def emission_probability(w1, row):
 	value = value/float(sum_value)
 	return value
 
-def transition_probability(row, row1):
-	value = (0.99 - (abs(row1 - row))*1.5/float(row+1))
-	if value < 0:
-		value = 0.01
-	return value
+def transition_probability(row, rows):
+	list_dist = [0]*len(rows)
+	dist_dict = {}
+	for i in range(len(rows)):
+		if rows[i] == row:
+			dist_dict.update({i: float(0.8)})	
+		else:
+			dist_dict.update({i: float(1)/abs(rows[i]*rows[i] - row*row)})
+	sum_dist = sum(dist_dict.values())
+	for i in range(len(rows)):
+		list_dist[i] = dist_dict[i]/sum_dist
+	return list_dist
 
 def probability_distribution(col, rows, row0, row2, w1):
 	p_list = [0]*len(rows)
 	value_dict = {}
+	trans_row0 = transition_probability(row0, rows)
+	trans_row2 = transition_probability(row2, rows)
 	for i in range(len(rows)):
 		if row0 == -1:
-			value = transition_probability(i, row2)*emission_probability(w1, i)
+			value = trans_row2[i]*emission_probability(w1, i)
 			value_dict.update({i : value})
 		elif row2 == -1:
-			value = transition_probability(row0, i)*emission_probability(w1, i)
+			value = trans_row0[i]*emission_probability(w1, i)
 			value_dict.update({i : value})
 		else:
-			value = transition_probability(row2, i)*transition_probability(row0, i)*(emission_probability(w1, i))
+			value = trans_row2[i]*trans_row0[i]*(emission_probability(w1, i))
 			value_dict.update({i : value})
 	sum_values = sum(value_dict.values())
 	for i in range(len(rows)):
@@ -67,7 +76,7 @@ def construct_ridge2(edge_strength):
 	#getting a sample particle
 	ridge = edge_strength.argmax(axis = 0)
 	#smoothing particles now
-	for t in range(100):
+	for t in range(1):
 		print t
 		for i in range(len(ridge)):
 			rows = []
