@@ -116,5 +116,6 @@ red_ridge = edge_strength.argmax(axis = 0)
 # output answer
 blue_ridge = construct_ridge2(edge_strength)
 
+green_ridge = construct_ridge3(edge_strength)
 imsave(output_filename, draw_edge(input_image, red_ridge, (255, 0, 0), 5))
 imsave(output_filename, draw_edge(input_image, blue_ridge, (0, 0, 255), 5))
