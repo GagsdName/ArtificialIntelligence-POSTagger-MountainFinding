@@ -10,7 +10,7 @@
 #
 #
 ####
-# Put your report here!!
+# Please refer the README.md (Under the part1 directory) file for Report related to this part of the assignment.
 ####
 
 from math import log as Log
@@ -132,7 +132,7 @@ class Solver:
             # If all the elements in temp are 0.0, then reset the viterbiTable with initial default
             # probabilities of each tag. This will avoid the propagation of 0-probabilities to future
             # steps of Viterbi Algorithm. By doing this we have observed a significant improvement in
-            # the word-accuracy - From 71.6% to 94.02%
+            # the word-accuracy - From 92.6% to 94.02%
             if max(temp) == 0.0:
                 del temp[:]
                 for tag in posTags:
