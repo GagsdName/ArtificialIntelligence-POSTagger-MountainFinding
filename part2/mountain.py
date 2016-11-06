@@ -33,10 +33,9 @@ def draw_edge(image, y_coordinates, color, thickness):
             image.putpixel((x, t), color)
     return image
 
-def emission_probability(w1, row):
+def emission_probability(max_value, w1, row):
 	value = w1.item(row)
-	sum_value = sum(w1)
-	value = value/float(sum_value)
+	value = value/float(max_value)
 	return value
 
 def transition_probability(row, rows):
@@ -47,25 +46,23 @@ def transition_probability(row, rows):
 			dist_dict.update({i: float(0.8)})	
 		else:
 			dist_dict.update({i: float(1)/abs(rows[i]*rows[i] - row*row)})
-	sum_dist = sum(dist_dict.values())
-	for i in range(len(rows)):
-		list_dist[i] = dist_dict[i]/sum_dist
-	return list_dist
+	return dist_dict
 
 def probability_distribution(col, rows, row0, row2, w1):
 	p_list = [0]*len(rows)
+	max_value = max(w1)
 	value_dict = {}
 	trans_row0 = transition_probability(row0, rows)
 	trans_row2 = transition_probability(row2, rows)
 	for i in range(len(rows)):
 		if row0 == -1:
-			value = trans_row2[i]*emission_probability(w1, rows[i])
+			value = trans_row2[i]*emission_probability(max_value, w1, rows[i])
 			value_dict.update({i : value})
 		elif row2 == -1:
-			value = trans_row0[i]*emission_probability(w1, rows[i])
+			value = trans_row0[i]*emission_probability(max_value, w1, rows[i])
 			value_dict.update({i : value})
 		else:
-			value = trans_row2[i]*trans_row0[i]*(emission_probability(w1, rows[i]))
+			value = trans_row2[i]*trans_row0[i]*(emission_probability(max_value, w1, rows[i]))
 			value_dict.update({i : value})
 	sum_values = sum(value_dict.values())
 	for i in range(len(rows)):
@@ -76,7 +73,7 @@ def construct_ridge2(edge_strength):
 	#getting a sample particle
 	ridge = edge_strength.argmax(axis = 0)
 	#smoothing particles now
-	for t in range(50):
+	for t in range(500):
 		print t
 		for i in range(len(ridge)):
 			rows = []
@@ -93,8 +90,8 @@ def construct_ridge2(edge_strength):
 
 def get_pruned_rows(rowi):
 	rows = []
-	start = 0 if rowi-20 < 0 else rowi-20
-	end = len(edge_strength) - 1 if rowi+20 > len(edge_strength) - 1 else rowi+20
+	start = 0 if rowi-5 < 0 else rowi-5
+	end = len(edge_strength) - 1 if rowi+5 > len(edge_strength) - 1 else rowi+5
 	rows = range(start, end)
 	return rows
 # main program
