@@ -59,13 +59,13 @@ def probability_distribution(col, rows, row0, row2, w1):
 	trans_row2 = transition_probability(row2, rows)
 	for i in range(len(rows)):
 		if row0 == -1:
-			value = trans_row2[i]*emission_probability(w1, i)
+			value = trans_row2[i]*emission_probability(w1, rows[i])
 			value_dict.update({i : value})
 		elif row2 == -1:
-			value = trans_row0[i]*emission_probability(w1, i)
+			value = trans_row0[i]*emission_probability(w1, rows[i])
 			value_dict.update({i : value})
 		else:
-			value = trans_row2[i]*trans_row0[i]*(emission_probability(w1, i))
+			value = trans_row2[i]*trans_row0[i]*(emission_probability(w1, rows[i]))
 			value_dict.update({i : value})
 	sum_values = sum(value_dict.values())
 	for i in range(len(rows)):
@@ -76,7 +76,7 @@ def construct_ridge2(edge_strength):
 	#getting a sample particle
 	ridge = edge_strength.argmax(axis = 0)
 	#smoothing particles now
-	for t in range(1):
+	for t in range(50):
 		print t
 		for i in range(len(ridge)):
 			rows = []
