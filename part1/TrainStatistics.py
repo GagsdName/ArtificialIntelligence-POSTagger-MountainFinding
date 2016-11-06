@@ -45,6 +45,7 @@ class TrainStatistics:
                                     '.' : 0
                                 }
         self.bigramCount = {}
+        self.trigramCount = {}
         self.wordToTagCount = {}
 # Extract the statistics from individual sentence and update the count/map variables accordingly
 # sentence is a tuple of words (observed variables) and corresponding POS Tag (hidden variables)
@@ -60,6 +61,10 @@ class TrainStatistics:
             self.wordToTagCount[temp] = (self.wordToTagCount[temp]+1) if temp in self.wordToTagCount else 1
             temp = sentence[1][i-1]+'#'+sentence[1][i]
             self.bigramCount[temp] = (self.bigramCount[temp]+1) if temp in self.bigramCount else 1
+            if i < len(sentence)-1:
+                temp += '#'+sentence[1][i+1]
+                self.trigramCount[temp] = (self.trigramCount[temp]+1) if temp in self.trigramCount else 1
+                
           
     def printStatistics(self):
         print("{}-{}".format('totalCount', self.totalCount))
@@ -80,6 +85,12 @@ class TrainStatistics:
             return 0
         temp = tag2+'#'+tag1
         return self.bigramCount[temp]/self.individualCount[tag2] if temp in self.bigramCount else (0.5/self.individualCount[tag2])
+# Returns the prior probability of tag1 given tag2,tag3: P(tag1/tag2) with Smoothing
+    def getTrigramProbability(self, tag1, tag2, tag3):
+        if self.bigramCount[tag2+'#'+tag3]==0:
+            return 0
+        temp = tag2+'#'+tag3+'#'+tag1
+        return self.trigramCount[temp]/self.bigramCount[tag2+'#'+tag3] if temp in self.trigramCount else (0.5/self.bigramCount[tag2+'#'+tag3])
 # Returns the probability of a word (W) given a tag: P(W/S) without Smoothing
     def getEmissionProbability(self, word, tag):
         if self.individualCount[tag]==0:

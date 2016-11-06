@@ -112,11 +112,30 @@ class Solver:
             posLabels.append(posTags[viterbiTable.index(max(viterbiTable))])
             # print("{}-{}".format('POS Labels', posLabels))
             # print("{}-{}".format('Viterbi Table', viterbiTable))
-                                             
         return [[posLabels], [marginalProabbility]]
 
     def complex(self, sentence):
-        return [ [ [ "noun" ] * len(sentence)], [[0] * len(sentence),] ]
+        posLabels = []
+        marginalProabbility = []
+        # Calculate the argmax for S1
+        temp = []
+        for tag in posTags:
+            temp.append(ts.getStartProbability(tag) * ts.getEmissionProbability(sentence[0], tag))
+        marginalProabbility.append(max(temp))
+        posLabels.append(posTags[temp.index(max(temp))])
+        for idx,word in enumerate(sentence[1:]):
+            del temp[:]
+            for i in range(0, len(posTags)):
+                temp.append(
+                    (ts.getTrigramProbability(posTags[i], posLabels[-2], posLabels[-1]) if idx>=2 else 1.0) *
+                    ts.getTransitionProbability(posTags[i], posLabels[-1]) *
+                    ts.getEmissionProbability(word, posTags[i])
+                    )
+            marginalProabbility.append(max(temp))
+            posLabels.append(posTags[temp.index(max(temp))])
+            # print("{}-{}".format('POS Labels', posLabels))
+            # print("{}-{}".format('Viterbi Table', viterbiTable))
+        return [[posLabels], [marginalProabbility]]
 
 
     # This solve() method is called by label.py, so you should keep the interface the
