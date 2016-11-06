@@ -52,8 +52,10 @@ def probability_distribution(col, rows, row0, row2, w1):
 	p_list = [0]*len(rows)
 	max_value = max(w1)
 	value_dict = {}
-	trans_row0 = transition_probability(row0, rows)
-	trans_row2 = transition_probability(row2, rows)
+	if row0 != -1:
+		trans_row0 = transition_probability(row0, rows)
+	if row2 != -1:
+		trans_row2 = transition_probability(row2, rows)
 	for i in range(len(rows)):
 		if row0 == -1:
 			value = trans_row2[i]*emission_probability(max_value, w1, rows[i])
@@ -73,25 +75,26 @@ def construct_ridge2(edge_strength):
 	#getting a sample particle
 	ridge = edge_strength.argmax(axis = 0)
 	#smoothing particles now
-	for t in range(500):
+	for t in range(150):
 		print t
 		for i in range(len(ridge)):
 			rows = []
 			row0 = ridge[i-1] if i-1>=0 else -1
 			row2 = ridge[i+1] if i+1 < len(ridge)-1 else -1
 			if row0 != -1:
-				rows += get_pruned_rows(row0)
+				rows += get_pruned_rows(row0, len(edge_strength)/4)
 			if row2 != -1:
-				rows += get_pruned_rows(row2)
+				rows += get_pruned_rows(row2, len(edge_strength)/4)
 			rows= list(set(rows))
 			p_list = probability_distribution(i, rows,row0, row2, edge_strength[:,i])
 			ridge[i] = random.choice(rows, p=p_list)
+		print std(ridge, ddof=1)
 	return ridge
 
-def get_pruned_rows(rowi):
+def get_pruned_rows(rowi, prune):
 	rows = []
-	start = 0 if rowi-5 < 0 else rowi-5
-	end = len(edge_strength) - 1 if rowi+5 > len(edge_strength) - 1 else rowi+5
+	start = 0 if rowi-prune < 0 else rowi-prune
+	end = len(edge_strength) - 1 if rowi+prune > len(edge_strength) - 1 else rowi+prune
 	rows = range(start, end)
 	return rows
 # main program
