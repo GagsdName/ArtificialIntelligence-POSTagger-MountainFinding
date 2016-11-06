@@ -19,8 +19,8 @@ P(Ti/Wi) = arg.max P(Wi/Ti).P(Ti)
                    Words correct:     Sentences correct:
    0. Ground truth:      100.00%              100.00%
      1. Simplified:       92.10%               39.30%
-            2. HMM:       94.03%               48.70%
-        3. Complex:       94.21%               48.80%
+            2. HMM:       94.02%               48.55%
+        3. Complex:       94.20%               48.70%
         
 -- Additional Experimentation: To make sure that our models are not suffering from the Over-Fitting problem, we ran a few experiments wherein we modified our training set by adding a chunk of top 200 lines from Test Data and at the same time altering the Test set by adding a chunk of top 200 lines from Training data. After running test experiments, the observed accuracy for each run is more or less similar to the original result. Below are the results from the experiment:
 
