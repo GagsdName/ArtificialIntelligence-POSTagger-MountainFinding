@@ -73,9 +73,9 @@ def probability_distribution(col, rows, row0, row2, w1):
 
 def construct_ridge2(edge_strength):
 	#getting a sample particle
-	ridge = edge_strength.argmax(axis = 0)
+	ridge = random.choice(len(edge_strength), len(edge_strength[0]), replace=True)
 	#smoothing particles now
-	for t in range(150):
+	for t in range(500):
 		print t
 		for i in range(len(ridge)):
 			rows = []
