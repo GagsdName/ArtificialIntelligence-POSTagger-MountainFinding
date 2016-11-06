@@ -131,6 +131,14 @@ class Solver:
                     ts.getTransitionProbability(posTags[i], posLabels[-1]) *
                     ts.getEmissionProbability(word, posTags[i])
                     )
+            # If all the elements in temp are 0.0, then reset the viterbiTable with initial default
+            # probabilities of each tag. This will avoid the propagation of 0-probabilities to future
+            # steps of Viterbi Algorithm. By doing this we have observed a significant improvement in
+            # the word-accuracy - From 71.6% to 94.02%
+            if max(temp) == 0.0:
+                del temp[:]
+                for tag in posTags:
+                    temp.append(ts.getPriorTagProbability(tag))
             marginalProabbility.append(max(temp))
             posLabels.append(posTags[temp.index(max(temp))])
             # print("{}-{}".format('POS Labels', posLabels))
