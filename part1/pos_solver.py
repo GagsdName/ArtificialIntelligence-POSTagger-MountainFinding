@@ -76,8 +76,6 @@ class Solver:
         # print(sentence)
         posLabels = []
         marginalProabbility = []
-        # Since we only need the previous state information, keeping the previous state values in a list will save memory
-        # Size of the Viterbi Table = Number of POS Tags available = 12
         # Initialize the Viterbi table with start probabilities
         viterbiTable = []
         for tag in posTags:
