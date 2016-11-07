@@ -65,8 +65,9 @@ def probability_distribution_with_feedback(col, rows, row0, row2, w1, impact):
 			value = trans_row0[i]*emission_probability(max_value, w1, rows[i])*human_input[i]*impact
 			value_dict.update({i : value})
 		else:
-			value = trans_row2[i]*trans_row0[i]*(emission_probability(max_value, w1, rows[i]))*human_input[i]*impact
+			value = trans_row2[i]*trans_row0[i]*emission_probability(max_value, w1, rows[i])*human_input[i]*impact
 			value_dict.update({i : value})
+
 	sum_values = sum(value_dict.values())
 	for i in range(len(rows)):
 		p_list[i] = float(value_dict[i])/sum_values
@@ -96,6 +97,7 @@ def probability_distribution(col, rows, row0, row2, w1):
 	return p_list
 
 def human_feedback(rows, impact):
+	dist_dict = {}
 	p_list = [0]*len(rows)
 	if impact == -1:
 		return [1.0]*len(rows)
@@ -112,13 +114,17 @@ def human_feedback(rows, impact):
 	return p_list
 
 def get_impact():
+	start = 0 if gt_col-50 < 0 else gt_col-50
+	end = len(edge_strength[0])-1 if gt_col+50 > len(edge_strength[0])-1 else gt_col+50 
 	impact_dist = {}
-	for i in range(gt_col-10, gt_col+10):
-		impact_dist.update({i : float(1)/(i*i - gt_col*gt_col)})
+	for i in range(start, end):
+		if i != gt_col:
+			impact_dist.update({i : float(1)/abs((i*i - gt_col*gt_col))})
 	sum_distance = sum(impact_dist.values())
-	for i in range(gt_col-10, gt_col+10):
-		value = impact_dist[i]
-		impact_dist.update({i : value/sum_distance})
+	for i in range(start, end):
+		if i != gt_col:
+			value = impact_dist[i]
+			impact_dist.update({i : value/sum_distance})
 	return impact_dist
 
 def construct_ridge3(edge_strength):
@@ -142,7 +148,7 @@ def construct_ridge3(edge_strength):
 			if i in impact_dist:
 				p_list = probability_distribution_with_feedback(i, rows,row0, row2, edge_strength[:,i], impact_dist[i])
 			else:
-				p_list = probability_distribution(i, rows,row0, row2, edge_strength[:,i])
+				p_list = probability_distribution(i, rows, row0, row2, edge_strength[:,i])
 			ridge[i] = random.choice(rows, p=p_list)
 		print std(ridge, ddof=1)
 	return ridge
@@ -159,9 +165,9 @@ def construct_ridge2(edge_strength):
 			row0 = ridge[i-1] if i-1>=0 else -1
 			row2 = ridge[i+1] if i+1 < len(ridge)-1 else -1
 			if row0 != -1:
-				rows += get_pruned_rows(row0, len(edge_strength)/4)
+				rows += get_pruned_rows(row0, 10)
 			if row2 != -1:
-				rows += get_pruned_rows(row2, len(edge_strength)/4)
+				rows += get_pruned_rows(row2, 50)
 			rows= list(set(rows))
 			p_list = probability_distribution(i, rows,row0, row2, edge_strength[:,i])
 			ridge[i] = random.choice(rows, p=p_list)
