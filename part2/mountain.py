@@ -133,7 +133,7 @@ def construct_ridge3(edge_strength):
 	#smoothing particles now
 	impact_dist = get_impact()
 	for t in range(100):
-		print t
+		print "Sample no: " + str(t)
 		for i in range(len(ridge)):
 			if i == gt_col:
 				continue
@@ -150,7 +150,6 @@ def construct_ridge3(edge_strength):
 			else:
 				p_list = probability_distribution(i, rows, row0, row2, edge_strength[:,i])
 			ridge[i] = random.choice(rows, p=p_list)
-		print std(ridge, ddof=1)
 	return ridge
 
 
@@ -159,7 +158,7 @@ def construct_ridge2(edge_strength):
 	ridge = random.choice(len(edge_strength), len(edge_strength[0]), replace=True)
 	#smoothing particles now
 	for t in range(100):
-		print t
+		print "Sample no: " + str(t)
 		for i in range(len(ridge)):
 			rows = []
 			row0 = ridge[i-1] if i-1>=0 else -1
@@ -171,7 +170,6 @@ def construct_ridge2(edge_strength):
 			rows= list(set(rows))
 			p_list = probability_distribution(i, rows,row0, row2, edge_strength[:,i])
 			ridge[i] = random.choice(rows, p=p_list)
-		print std(ridge, ddof=1)
 	return ridge
 
 def get_pruned_rows(rowi, prune):
